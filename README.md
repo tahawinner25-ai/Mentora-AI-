@@ -132,10 +132,7 @@ Students can monitor:
 - OpenAI Responses API
 - GPT-5.6
 
-## Deployment
 
-- Vercel
-- GitHub
 
 ---
 
