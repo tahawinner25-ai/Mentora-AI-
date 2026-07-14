@@ -1,166 +1,45 @@
-generator client {
-  provider = "prisma-client-js"
-}
+User
+LearningProfile
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+Conversation
+Message
+Memory
 
-enum UserRole {
-  STUDENT
-  TEACHER
-  ADMIN
-}
+DiagnosticResult
+DiagnosticQuestion
 
-enum Difficulty {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-}
+Course
+Module
+Lesson
+Topic
 
-enum LessonStatus {
-  NOT_STARTED
-  IN_PROGRESS
-  COMPLETED
-}
+Quiz
+Question
+Answer
 
-model User {
-  id              String      @id @default(cuid())
-  email           String      @unique
-  username        String?     @unique
-  firstName       String?
-  lastName        String?
-  avatar          String?
+Exam
 
-  role            UserRole    @default(STUDENT)
+StudySession
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+MiniGame
+GameProgress
 
-  profile         LearningProfile?
+Flashcard
 
-  lessons         Lesson[]
-  quizzes         Quiz[]
-  sessions        StudySession[]
-  achievements    Achievement[]
-}
+Goal
 
-model LearningProfile {
-  id                String   @id @default(cuid())
+DailyChallenge
 
-  userId            String   @unique
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+Achievement
 
-  currentLevel      Difficulty @default(BEGINNER)
+Leaderboard
 
-  xp                Int      @default(0)
+Notification
 
-  streak            Int      @default(0)
+LearningAnalytics
 
-  totalStudyMinutes Int      @default(0)
+VoiceSession
 
-  preferredLanguage String   @default("English")
+Settings
 
-  accessibilityMode Boolean  @default(false)
-
-  createdAt         DateTime @default(now())
-
-  updatedAt         DateTime @updatedAt
-}
-
-model Lesson {
-  id          String @id @default(cuid())
-
-  title       String
-
-  subject     String
-
-  content     String @db.Text
-
-  difficulty  Difficulty
-
-  status      LessonStatus @default(NOT_STARTED)
-
-  aiGenerated Boolean @default(true)
-
-  userId      String
-
-  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt   DateTime @default(now())
-}
-
-model Quiz {
-
-  id          String @id @default(cuid())
-
-  title       String
-
-  score       Float?
-
-  maxScore    Float
-
-  difficulty  Difficulty
-
-  aiGenerated Boolean @default(true)
-
-  userId      String
-
-  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  questions   Question[]
-
-  createdAt   DateTime @default(now())
-}
-
-model Question {
-
-  id            String @id @default(cuid())
-
-  question      String
-
-  answer        String
-
-  explanation   String @db.Text
-
-  quizId        String
-
-  quiz          Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
-}
-
-model StudySession {
-
-  id          String @id @default(cuid())
-
-  duration    Int
-
-  subject     String
-
-  completed   Boolean @default(false)
-
-  userId      String
-
-  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt   DateTime @default(now())
-}
-
-model Achievement {
-
-  id          String @id @default(cuid())
-
-  title       String
-
-  description String
-
-  icon        String
-
-  unlocked    Boolean @default(false)
-
-  userId      String
-
-  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt   DateTime @default(now())
-}
+Subscription
