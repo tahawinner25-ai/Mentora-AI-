@@ -1,45 +1,181 @@
-User
-LearningProfile
+generator client {
+  provider = "prisma-client-js"
+}
 
-Conversation
-Message
-Memory
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-DiagnosticResult
-DiagnosticQuestion
+enum LearningLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
 
-Course
-Module
-Lesson
-Topic
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
 
-Quiz
-Question
-Answer
+model User {
+  id                String              @id @default(cuid())
+  email             String              @unique
+  name              String?
+  xp                Int                 @default(0)
+  streak            Int                 @default(0)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  learningProfile   LearningProfile?
+  conversations     Conversation[]
+  diagnosticResults DiagnosticResult[]
+  studySessions     StudySession[]
+  gameProgress      GameProgress[]
+  achievements      Achievement[]
+  settings          Settings?
+}
 
-Exam
+model LearningProfile {
+  id                 String        @id @default(cuid())
+  userId             String        @unique
+  level              LearningLevel @default(BEGINNER)
+  learningStyle      String        @default("balanced")
+  strengths          String[]
+  weaknesses         String[]
+  prefersDyslexicUi  Boolean       @default(false)
+  prefersAutismUi    Boolean       @default(false)
+  roadmap            Json?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 
-StudySession
+model Conversation {
+  id        String    @id @default(cuid())
+  userId    String
+  title     String    @default("Mentora tutoring session")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  Message[]
+}
 
-MiniGame
-GameProgress
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  role           MessageRole
+  content        String
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
 
-Flashcard
+model DiagnosticResult {
+  id            String        @id @default(cuid())
+  userId        String
+  level         LearningLevel
+  score         Int
+  strengths     String[]
+  weaknesses    String[]
+  learningStyle String
+  roadmap       Json?
+  createdAt     DateTime      @default(now())
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 
-Goal
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  subject     String
+  modules     Module[]
+  createdAt   DateTime @default(now())
+}
 
-DailyChallenge
+model Module {
+  id       String   @id @default(cuid())
+  courseId String
+  title    String
+  order    Int
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons  Lesson[]
+}
 
-Achievement
+model Lesson {
+  id        String        @id @default(cuid())
+  moduleId  String
+  title     String
+  content   String
+  level     LearningLevel
+  module    Module        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  quizzes   Quiz[]
+}
 
-Leaderboard
+model Quiz {
+  id        String     @id @default(cuid())
+  lessonId  String?
+  title     String
+  level     LearningLevel
+  lesson    Lesson?    @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  questions Question[]
+}
 
-Notification
+model Question {
+  id          String   @id @default(cuid())
+  quizId      String
+  prompt      String
+  choices     String[]
+  answer      String
+  explanation String
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
 
-LearningAnalytics
+model StudySession {
+  id        String   @id @default(cuid())
+  userId    String
+  subject   String
+  minutes   Int
+  xpEarned  Int      @default(0)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 
-VoiceSession
+model MiniGame {
+  id          String         @id @default(cuid())
+  title       String
+  subject     String
+  description String
+  progress    GameProgress[]
+}
 
-Settings
+model GameProgress {
+  id         String   @id @default(cuid())
+  userId     String
+  miniGameId String
+  score      Int      @default(0)
+  completed  Boolean  @default(false)
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  miniGame   MiniGame @relation(fields: [miniGameId], references: [id], onDelete: Cascade)
 
-Subscription
+  @@unique([userId, miniGameId])
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String
+  earnedAt    DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Settings {
+  id              String  @id @default(cuid())
+  userId          String  @unique
+  reducedMotion   Boolean @default(false)
+  dyslexicMode    Boolean @default(false)
+  autismMode      Boolean @default(false)
+  preferredLocale String  @default("en")
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
