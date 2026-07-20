@@ -136,7 +136,18 @@ dist
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
+"{
+  "projectId": "gen-lang-client-0385939173",
+  "appId": "1:755939581161:web:c74fcb5d941f405401e478",
+  "apiKey": "AIzaSyBC04ZBH6sidkHmmvfzXqRhjQCqu1DGcXU",
+  "authDomain": "gen-lang-client-0385939173.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-mentoraai-8ba24c6b-d43f-44f0-accd-d84aae66d685",
+  "storageBucket": "gen-lang-client-0385939173.firebasestorage.app",
+  "messagingSenderId": "755939581161",
+  "measurementId": "",
+  "oAuthClientId": "755939581161-ttl2i2u1mps1cu99in1jnk1s1tlqv3f4.apps.googleusercontent.com",
+  "recaptchaSiteKey": ""
+}"
 # Vite files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
